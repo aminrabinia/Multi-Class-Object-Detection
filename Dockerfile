@@ -34,6 +34,7 @@ ENV DEBIAN_FRONTEND teletype
 
 COPY main.py /usr/src/app
 COPY testimg.jpg /usr/src/app
+COPY testimg2.jpg /usr/src/app
 COPY best.pt /usr/src/app
 
 # API config

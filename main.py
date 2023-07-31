@@ -36,23 +36,27 @@ def root():
 class_category={'picture': 0, 'sofa': 1, 'both': None}
 
 def gradio_infer(input_image, key, conf):
-     model.classes = class_category[key]
-     model.conf = conf
-     gresults = model(input_image, size=640) 
-     gresults.render()
-     gres=Image.new(mode="RGB", size=(1, 1)) # blank img
-     for img in gresults.ims:
-          bytes_io = BytesIO()
-          gres = Image.fromarray(img)
-     return gres
+     if input_image:
+         model.classes = class_category[key]
+         model.conf = conf
+         gresults = model(input_image, size=640) 
+         gresults.render()
+         gres=Image.new(mode="RGB", size=(1, 1)) # blank img
+         for img in gresults.ims:
+              bytes_io = BytesIO()
+              gres = Image.fromarray(img)
+         return gres
 
 
 io = gr.Interface(fn=gradio_infer, 
-     inputs=[gr.Image(type="pil"), gr.Radio(["picture", "sofa", "both"], value='both', label="What object do you want to detect?"), gr.Slider(0.50, 0.99, value=0.75, label="Set the confidence level:")],
+     inputs=[gr.Image(type="pil"), 
+            gr.Radio(["picture", "sofa", "both"], value='both', label="What object do you want to detect?"), 
+            gr.Slider(0.50, 0.90, step=0.10, value=0.70, label="Set the confidence level:")],
      outputs=gr.Image(type="pil"),
-     examples=[["testimg.jpg", "picture", 0.8]],
+     examples=[["testimg.jpg", "picture", 0.8], ["testimg2.jpg", "sofa", 0.7]],
      allow_flagging = 'never',
-     css="footer {visibility: hidden}"
+     css="footer {visibility: hidden}",
+     live=True
      )
 
 gr.mount_gradio_app(app, io, path="/gradio")
